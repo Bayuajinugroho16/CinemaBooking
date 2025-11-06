@@ -169,6 +169,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎬 Booking page loaded!');
+
             const studioRadios = document.querySelectorAll('.studio-radio');
             const seatMap = document.getElementById('seatMap');
             const selectedSeatsDiv = document.getElementById('selectedSeats');
@@ -177,11 +179,13 @@
             const filmPrice = {{ $film->price }};
 
             let selectedSeats = [];
+            let currentStudioId = null;
 
             // Load seats when studio is selected
             studioRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     if (this.checked) {
+                        currentStudioId = this.value;
                         loadSeats(this.value);
                     }
                 });
@@ -190,15 +194,16 @@
             // Load initial seats for first studio
             const initialStudio = document.querySelector('.studio-radio:checked');
             if (initialStudio) {
+                currentStudioId = initialStudio.value;
                 loadSeats(initialStudio.value);
             }
 
             function loadSeats(studioId) {
+                console.log('Loading seats for studio:', studioId);
                 fetch(`/studios/${studioId}/seats`)
                     .then(response => response.json())
                     .then(data => {
                         renderSeatMap(data);
-                        selectedSeats = [];
                         updateSelectedSeats();
                     })
                     .catch(error => {
@@ -208,6 +213,7 @@
             }
 
             function renderSeatMap(seatsByRow) {
+                console.log('Rendering seat map with data:', seatsByRow);
                 seatMap.innerHTML = '';
 
                 Object.keys(seatsByRow).sort().forEach(row => {
@@ -225,9 +231,12 @@
                         const seatDiv = document.createElement('div');
                         let seatClass = 'w-8 h-8 rounded flex items-center justify-center text-xs font-bold cursor-pointer transition-all ';
 
+                        // Check if seat is selected
+                        const isSelected = selectedSeats.find(s => s.id === seat.id);
+
                         if (!seat.is_available) {
-                            seatClass += 'seat-occupied';
-                        } else if (selectedSeats.find(s => s.id === seat.id)) {
+                            seatClass += 'seat-occupied cursor-not-allowed';
+                        } else if (isSelected) {
                             seatClass += 'seat-selected';
                         } else if (seat.type === 'sweetbox') {
                             seatClass += 'seat-sweetbox hover:bg-yellow-400';
@@ -238,9 +247,13 @@
                         seatDiv.className = seatClass;
                         seatDiv.textContent = seat.number;
                         seatDiv.title = `Kursi ${seat.seat_code}`;
+                        seatDiv.dataset.seatId = seat.id;
 
                         if (seat.is_available) {
-                            seatDiv.addEventListener('click', () => toggleSeat(seat));
+                            seatDiv.addEventListener('click', function() {
+                                console.log('Clicked seat:', seat.seat_code);
+                                toggleSeat(seat);
+                            });
                         }
 
                         rowDiv.appendChild(seatDiv);
@@ -251,26 +264,43 @@
             }
 
             function toggleSeat(seat) {
+                console.log('Toggling seat:', seat.seat_code);
+                console.log('Current selected seats before:', selectedSeats.map(s => s.seat_code));
+
                 const seatIndex = selectedSeats.findIndex(s => s.id === seat.id);
 
                 if (seatIndex > -1) {
                     // Remove seat
                     selectedSeats.splice(seatIndex, 1);
+                    console.log('Removed seat:', seat.seat_code);
                 } else {
                     // Add seat
                     selectedSeats.push(seat);
+                    console.log('Added seat:', seat.seat_code);
                 }
 
+                console.log('Current selected seats after:', selectedSeats.map(s => s.seat_code));
                 updateSelectedSeats();
-                loadSeats(document.querySelector('.studio-radio:checked').value); // Refresh seat map
+
+                // Re-render seat map to update colors without losing event listeners
+                if (currentStudioId) {
+                    fetch(`/studios/${currentStudioId}/seats`)
+                        .then(response => response.json())
+                        .then(data => {
+                            renderSeatMap(data);
+                        });
+                }
             }
 
             function updateSelectedSeats() {
+                console.log('Updating selected seats display. Count:', selectedSeats.length);
+
                 // Update selected seats display
                 if (selectedSeats.length === 0) {
                     selectedSeatsDiv.innerHTML = 'Belum ada kursi dipilih';
                     totalPriceSpan.textContent = 'Rp 0';
                     bookButton.disabled = true;
+                    console.log('No seats selected - disabling button');
                 } else {
                     const seatCodes = selectedSeats.map(seat => {
                         const extra = seat.type === 'sweetbox' ? ' (Sweetbox)' : '';
@@ -290,12 +320,12 @@
 
                     totalPriceSpan.textContent = 'Rp ' + total.toLocaleString('id-ID');
                     bookButton.disabled = false;
+                    console.log('Seats selected - enabling button. Total:', total);
                 }
 
-                // Remove existing hidden inputs
+                // Update hidden inputs for seats
                 document.querySelectorAll('input[name="seats[]"]').forEach(input => input.remove());
 
-                // Add new hidden inputs
                 selectedSeats.forEach(seat => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
@@ -303,6 +333,8 @@
                     input.value = seat.id;
                     document.getElementById('bookingForm').appendChild(input);
                 });
+
+                console.log('Created hidden inputs:', document.querySelectorAll('input[name="seats[]"]').length);
             }
 
             // Update radio button visuals

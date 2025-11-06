@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/BookingController.php
 
 namespace App\Http\Controllers;
 
@@ -9,6 +8,7 @@ use App\Models\Seat;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
 {
@@ -63,36 +63,95 @@ class BookingController extends Controller
         foreach ($selectedSeats as $seat) {
             $seatPrice = $film->price;
             if ($seat->type === 'sweetbox') {
-                $seatPrice += 20000; // Extra charge for sweetbox
+                $seatPrice += 20000;
             }
             $totalPrice += $seatPrice;
         }
 
-        // Create booking
+        // Create booking with pending status
         $booking = Booking::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id() ?? 1,
             'film_id' => $request->film_id,
             'studio_id' => $request->studio_id,
             'show_date' => $request->show_date,
             'show_time' => $request->show_time,
             'total_seats' => count($request->seats),
             'total_price' => $totalPrice,
-            'status' => 'confirmed'
+            'status' => 'pending', // Status pending sampai pembayaran verified
+            'payment_status' => 'pending'
         ]);
 
-        // Attach seats to booking
+        // Attach seats to booking (tapi jangan update availability dulu)
         $booking->seats()->attach($request->seats);
 
-        // Update seat availability
-        Seat::whereIn('id', $request->seats)->update(['is_available' => false]);
-
-        return redirect()->route('booking.confirmation', $booking->id)
-                        ->with('success', 'Pemesanan berhasil!');
+        return redirect()->route('booking.payment', $booking->id)
+                        ->with('success', 'Silakan lakukan pembayaran!');
     }
 
-    public function confirmation($bookingId)
+    public function payment($bookingId)
     {
         $booking = Booking::with(['film', 'studio', 'seats'])->findOrFail($bookingId);
-        return view('booking.confirmation', compact('booking'));
+
+        // QRIS code dummy (dalam real app, generate dari payment gateway)
+        $qrisCode = "00020101021126680014ID.CO.QRIS.WWW01189360091100012899510213Duitin QRIS52045812530336054061000005802ID5914CINEMA XXI IND6007Jakarta61051234062380114Duitin QRIS6304";
+
+        return view('booking.payment', compact('booking', 'qrisCode'));
+    }
+
+    public function uploadPayment(Request $request, $bookingId)
+    {
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $booking = Booking::findOrFail($bookingId);
+
+        // Upload bukti pembayaran
+        if ($request->hasFile('payment_proof')) {
+            $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+            $booking->update([
+                'payment_proof' => $path,
+                'payment_status' => 'pending' // Menunggu verifikasi admin
+            ]);
+        }
+
+        return redirect()->route('booking.pending', $booking->id)
+                        ->with('success', 'Bukti pembayaran berhasil diupload! Menunggu verifikasi admin.');
+    }
+
+    public function pending($bookingId)
+    {
+        $booking = Booking::with(['film', 'studio', 'seats'])->findOrFail($bookingId);
+        return view('booking.pending', compact('booking'));
+    }
+
+    // ADMIN FUNCTION - untuk verifikasi pembayaran
+    public function verifyPayment($bookingId)
+    {
+        $booking = Booking::findOrFail($bookingId);
+
+        // Update status pembayaran
+        $booking->update([
+            'payment_status' => 'verified',
+            'status' => 'confirmed',
+            'paid_at' => now()
+        ]);
+
+        // Update seat availability
+        $booking->seats()->update(['is_available' => false]);
+
+        return back()->with('success', 'Pembayaran berhasil diverifikasi!');
+    }
+
+    public function rejectPayment($bookingId, Request $request)
+    {
+        $booking = Booking::findOrFail($bookingId);
+
+        $booking->update([
+            'payment_status' => 'rejected',
+            'admin_notes' => $request->admin_notes
+        ]);
+
+        return back()->with('success', 'Pembayaran ditolak!');
     }
 }
