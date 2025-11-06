@@ -15,6 +15,20 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
+
+                    <!-- Tambahkan My Tickets link -->
+                    <x-nav-link :href="route('booking.myTicket')" :active="request()->routeIs('booking.myTicket')">
+                        {{ __('My Tickets') }}
+                    </x-nav-link>
+
+                    <!-- Tambahkan Admin Panel link (hanya untuk admin) -->
+                    @auth
+                        @if(Auth::user()->isAdmin())
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                            <i class="fas fa-cog mr-1"></i>{{ __('Admin Panel') }}
+                        </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
@@ -34,11 +48,28 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <!-- Profile Link -->
+                        <x-dropdown-link :href="route('profile.edit')">
+                            {{ __('Profile') }}
+                        </x-dropdown-link>
+
+                        <!-- My Tickets Link -->
+                        <x-dropdown-link :href="route('booking.myTicket')">
+                            {{ __('My Tickets') }}
+                        </x-dropdown-link>
+
+                        <!-- Admin Panel Link (hanya untuk admin) -->
+                        @auth
+                            @if(Auth::user()->isAdmin())
+                            <x-dropdown-link :href="route('admin.dashboard')">
+                                <i class="fas fa-cog mr-1"></i>{{ __('Admin Panel') }}
+                            </x-dropdown-link>
+                            @endif
+                        @endauth
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
@@ -67,6 +98,20 @@
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
                 {{ __('Home') }}
             </x-responsive-nav-link>
+
+            <!-- My Tickets Mobile -->
+            <x-responsive-nav-link :href="route('booking.myTicket')" :active="request()->routeIs('booking.myTicket')">
+                {{ __('My Tickets') }}
+            </x-responsive-nav-link>
+
+            <!-- Admin Panel Mobile (hanya untuk admin) -->
+            @auth
+                @if(Auth::user()->isAdmin())
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                    <i class="fas fa-cog mr-1"></i>{{ __('Admin Panel') }}
+                </x-responsive-nav-link>
+                @endif
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->
@@ -81,10 +126,23 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
+                <!-- My Tickets Mobile -->
+                <x-responsive-nav-link :href="route('booking.myTicket')">
+                    {{ __('My Tickets') }}
+                </x-responsive-nav-link>
+
+                <!-- Admin Panel Mobile (hanya untuk admin) -->
+                @auth
+                    @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.dashboard')">
+                        <i class="fas fa-cog mr-1"></i>{{ __('Admin Panel') }}
+                    </x-responsive-nav-link>
+                    @endif
+                @endauth
+
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">

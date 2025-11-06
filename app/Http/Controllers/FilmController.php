@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/FilmController.php
 
 namespace App\Http\Controllers;
 
@@ -8,8 +7,14 @@ use Illuminate\Http\Request;
 
 class FilmController extends Controller
 {
+
+
     public function index()
     {
+        // ⬇️ TAMBAHKAN REDIRECT DI SINI ⬇️
+        if (auth()->check() && auth()->user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
         // Untuk demo, kita bagi film secara acak
         $allFilms = Film::all();
 
@@ -22,11 +27,16 @@ class FilmController extends Controller
         // Film yang akan datang (ambil sisanya)
         $upcoming_films = $allFilms->slice(10);
 
-        return view('films.index', compact('films', 'films_other', 'upcoming_films'));
+        // ⬇️ PERBAIKI INI: ganti 'films.index' menjadi 'home' ⬇️
+        return view('home', compact('films', 'films_other', 'upcoming_films'));
     }
 
     public function show($id)
     {
+        // ⬇️ TAMBAHKAN REDIRECT DI SINI ⬇️
+        if (auth()->check() && auth()->user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
         $film = Film::findOrFail($id);
         return view('films.show', compact('film'));
     }

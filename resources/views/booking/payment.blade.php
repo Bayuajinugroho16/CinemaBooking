@@ -59,7 +59,7 @@
             <!-- Upload Proof -->
             <div class="bg-gray-800 rounded-xl p-6">
                 <h2 class="text-xl font-bold text-yellow-400 mb-4">Upload Bukti Pembayaran</h2>
-                <form action="{{ route('booking.uploadPayment', $booking->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('user.booking.upload-proof', $booking->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-4">
                         <label class="block text-gray-300 mb-2">Pilih file bukti pembayaran</label>

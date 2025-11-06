@@ -39,11 +39,19 @@
             <a href="#" class="flex items-center text-white hover:text-yellow-400 transition text-sm">
                 <i class="fas fa-ticket-alt mr-2"></i> Pesanan Saya
             </a>
-            <!-- Tombol login/member -->
+            {{-- <!-- Tombol login/member -->
             <button
                 class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold text-sm hover:bg-yellow-400 transition">
                 <i class="fas fa-crown mr-2"></i> LOGIN MEMBER
-            </button>
+            </button> --}}
+            <!-- Tombol Logout -->
+<form action="{{ route('logout') }}" method="POST" class="inline">
+    @csrf
+    <button type="submit"
+        class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-500 transition flex items-center">
+        <i class="fas fa-sign-out-alt mr-2"></i> LOGOUT
+    </button>
+</form>
         </nav>
     </header>
 

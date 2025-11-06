@@ -9,6 +9,9 @@ use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB; // ← TAMBAHKAN INI
+use Illuminate\Support\Facades\Log; // ← TAMBAHKAN INI
+use Illuminate\Support\Facades\Validator; // ← TAMBAHKAN INI
 
 class BookingController extends Controller
 {
@@ -89,34 +92,90 @@ class BookingController extends Controller
     }
 
     public function payment($bookingId)
+{
+    $booking = Booking::with(['film', 'studio', 'seats'])->findOrFail($bookingId);
+
+    // Generate dynamic QRIS data berdasarkan booking
+    $amount = str_pad($booking->total_price, 13, '0', STR_PAD_LEFT); // Format amount untuk QRIS
+    $merchantName = "CINEMA XXI BOOKING";
+    $bookingCode = str_pad($booking->id, 10, '0', STR_PAD_LEFT);
+
+    // QRIS format dengan data dinamis
+    $qrisCode = "000201" . // Payload Format Indicator
+                "010211" . // Point of Initiation Method
+                "26680014ID.CO.QRIS.WWW" . // Global Unique Identifier
+                "011893600911000128995" . // Merchant Account Information
+                "0106" . $bookingCode . // Booking ID
+                "0208" . $amount . // Amount
+                "52045812" . // Merchant Category Code
+                "5303604" . // Currency (IDR)
+                "5406" . $amount . // Transaction Amount
+                "5802ID" . // Country Code
+                "5906" . substr($merchantName, 0, 6) . // Merchant Name
+                "6007Jakarta" . // Merchant City
+                "610512340" . // Postal Code
+                "62380114Duitin QRIS" . // Additional Data Field Template
+                "6304"; // CRC
+
+    return view('booking.payment', compact('booking', 'qrisCode'));
+}
+
+    public function showPaymentProof($id)
     {
-        $booking = Booking::with(['film', 'studio', 'seats'])->findOrFail($bookingId);
+        $booking = Booking::where('user_id', auth()->id())->findOrFail($id);
 
-        // QRIS code dummy (dalam real app, generate dari payment gateway)
-        $qrisCode = "00020101021126680014ID.CO.QRIS.WWW01189360091100012899510213Duitin QRIS52045812530336054061000005802ID5914CINEMA XXI IND6007Jakarta61051234062380114Duitin QRIS6304";
-
-        return view('booking.payment', compact('booking', 'qrisCode'));
-    }
-
-    public function uploadPayment(Request $request, $bookingId)
-    {
-        $request->validate([
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
-        $booking = Booking::findOrFail($bookingId);
-
-        // Upload bukti pembayaran
-        if ($request->hasFile('payment_proof')) {
-            $path = $request->file('payment_proof')->store('payment-proofs', 'public');
-            $booking->update([
-                'payment_proof' => $path,
-                'payment_status' => 'pending' // Menunggu verifikasi admin
-            ]);
+        if (!$booking->payment_proof) {
+            abort(404, 'Bukti pembayaran tidak ditemukan');
         }
 
-        return redirect()->route('booking.pending', $booking->id)
+        $filePath = storage_path('app/public/payment-proofs/' . $booking->payment_proof);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'File bukti pembayaran tidak ditemukan');
+        }
+
+        return response()->file($filePath);
+    }
+
+public function uploadPaymentProof(Request $request, $id)
+{
+    try {
+        if (!$request->hasFile('payment_proof')) {
+            return redirect()->back()->with('error', 'Harap pilih file');
+        }
+
+        $file = $request->file('payment_proof');
+
+        $booking = Booking::where('user_id', auth()->id())->find($id);
+
+        if (!$booking) {
+            return redirect()->back()->with('error', 'Booking tidak ditemukan');
+        }
+
+        $filename = 'proof_' . $id . '_' . time() . '.jpg';
+        $file->storeAs('payment-proofs', $filename, 'public');
+
+        $booking->payment_proof = $filename;
+        $booking->payment_status = 'pending';
+        $booking->save();
+
+        // ⬇️ REDIRECT KE MY-TICKET ⬇️
+        return redirect()->route('booking.myTicket')
                         ->with('success', 'Bukti pembayaran berhasil diupload! Menunggu verifikasi admin.');
+
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+    }
+}
+
+    // TAMBAHKAN METHOD INI YANG BELUM ADA
+    public function showUserBooking($id)
+    {
+        $booking = Booking::with(['film', 'studio', 'seats'])
+                          ->where('user_id', auth()->id())
+                          ->findOrFail($id);
+
+        return view('user.booking-detail', compact('booking'));
     }
 
     public function pending($bookingId)
@@ -153,5 +212,25 @@ class BookingController extends Controller
         ]);
 
         return back()->with('success', 'Pembayaran ditolak!');
+    }
+
+    // TAMBAHKAN METHOD YANG DIPERLUKAN
+    public function myTicket()
+    {
+        $bookings = Booking::with(['film', 'studio', 'seats'])
+                          ->where('user_id', auth()->id())
+                          ->latest()
+                          ->get();
+
+        return view('booking.my-ticket', compact('bookings'));
+    }
+
+    public function confirmation($id)
+    {
+        $booking = Booking::with(['film', 'studio', 'seats'])
+                          ->where('user_id', auth()->id())
+                          ->findOrFail($id);
+
+        return view('booking.confirmation', compact('booking'));
     }
 }
