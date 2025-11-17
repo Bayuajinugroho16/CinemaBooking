@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password', // Akan di-hash otomatis oleh mutator
-            'role' => 'customer'
+            'role' => 'user'
         ]);
 
         // Panggil seeder lainnya

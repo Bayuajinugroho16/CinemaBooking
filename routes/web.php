@@ -5,7 +5,7 @@ use App\Http\Controllers\FilmController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\SocialAuthController;
 
 // ⬇️ TEST ROUTES - TARUH DI PALING ATAS ⬇️
 Route::get('/test', function () {
@@ -22,6 +22,10 @@ Route::get('/', function () {
     }
     return redirect()->route('login');
 });
+
+// ✅ GOOGLE AUTH ROUTES - PAKAI NAMA BARU
+Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 // Route default Breeze (login, register, dsb)
 require __DIR__.'/auth.php';
 // Debug route - tambahkan di atas route lainnya
@@ -49,6 +53,9 @@ Route::middleware(['auth'])->group(function () {
         }
         return app(FilmController::class)->show($id);
     })->name('films.show');
+
+        Route::get('/films', [FilmController::class, 'index'])->name('films.index');
+    Route::get('/films/{id}', [FilmController::class, 'show'])->name('films.show');
 
     // Booking routes
     Route::get('/films/{id}/book', [BookingController::class, 'showBookingPage'])->name('films.book');
@@ -80,6 +87,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/bookings/{id}/verify', [AdminController::class, 'verifyPayment'])->name('booking.verify');
     Route::post('/bookings/{id}/reject', [AdminController::class, 'rejectPayment'])->name('booking.reject');
     Route::get('/bookings/{id}/payment-proof', [AdminController::class, 'viewPaymentProof'])->name('booking.payment-proof');
+
     Route::get('/films', [AdminController::class, 'films'])->name('films');
+    Route::get('/films/create', [AdminController::class, 'createFilm'])->name('films.create');
+    Route::post('/films', [AdminController::class, 'storeFilm'])->name('films.store');
+    Route::get('/films/{id}/edit', [AdminController::class, 'editFilm'])->name('films.edit');
+    Route::put('/films/{id}', [AdminController::class, 'updateFilm'])->name('films.update');
+    Route::delete('/films/{id}', [AdminController::class, 'destroyFilm'])->name('films.destroy');
+
     Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
 });

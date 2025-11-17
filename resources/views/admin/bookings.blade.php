@@ -28,30 +28,21 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking
-                            ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking ID</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Film &
-                            Studio</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Show Time
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seats
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions
-                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Film & Studio</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Show Time</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seats</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach ($bookings as $booking)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $booking->id }}
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $booking->id }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{ $booking->user->name }}</div>
                                 <div class="text-sm text-gray-500">{{ $booking->user->email }}</div>
@@ -71,24 +62,16 @@
                                 Rp {{ number_format($booking->total_price, 0, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span
-                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                    {{ $booking->status == 'confirmed'
-                        ? 'bg-green-100 text-green-800'
-                        : ($booking->status == 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800') }}">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                    {{ $booking->status == 'confirmed' ? 'bg-green-100 text-green-800' :
+                                       ($booking->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                     {{ ucfirst($booking->status) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span
-                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                    {{ $booking->payment_status == 'verified'
-                        ? 'bg-green-100 text-green-800'
-                        : ($booking->payment_status == 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800') }}">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                    {{ $booking->payment_status == 'verified' ? 'bg-green-100 text-green-800' :
+                                       ($booking->payment_status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                     {{ ucfirst($booking->payment_status) }}
                                 </span>
                             </td>
@@ -107,24 +90,20 @@
 
                                 <!-- Verify/Reject Buttons -->
                                 @if ($booking->payment_status == 'pending')
-                                    <form action="{{ route('admin.booking.verify', $booking->id) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-green-600 hover:text-green-900">Verify</button>
-                                    </form>
-                                    <button onclick="showRejectForm({{ $booking->id }})"
+                                    <!-- Verify Button dengan Popup -->
+                                    <button onclick="showVerifyModal({{ $booking->id }})"
+                                            class="text-green-600 hover:text-green-900">Verify</button>
+
+                                    <!-- Reject Button dengan Popup -->
+                                    <button onclick="showRejectModal({{ $booking->id }})"
                                         class="text-red-600 hover:text-red-900">Reject</button>
                                 @endif
-                                <!-- Delete Button -->
-                                <form action="{{ route('admin.booking.destroy', $booking->id) }}" method="POST"
-                                    class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Delete Booking"
-                                        onclick="return confirm('Hapus booking #{{ $booking->id }}? Tindakan ini tidak dapat dibatalkan!')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+
+                                <!-- Delete Button dengan Popup -->
+                                <button onclick="showDeleteModal({{ $booking->id }})"
+                                        class="text-red-600 hover:text-red-900" title="Delete Booking">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -133,22 +112,59 @@
         </div>
     </div>
 
-    <!-- Reject Payment Modal -->
-    <div id="rejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <!-- Verify Confirmation Modal -->
+    <div id="verifyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900">Reject Payment</h3>
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-4 text-center">Verifikasi Pembayaran?</h3>
+                <div class="mt-2 px-4 py-3">
+                    <p class="text-sm text-gray-500 text-center">
+                        Apakah Anda yakin ingin memverifikasi pembayaran ini?
+                    </p>
+                    <p class="text-xs text-gray-400 mt-2 text-center">
+                        Booking ID: <span id="verifyBookingId" class="font-semibold"></span>
+                    </p>
+                </div>
+                <div class="mt-4 flex justify-center space-x-3">
+                    <button type="button" onclick="hideVerifyModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                        Batal
+                    </button>
+                    <form id="verifyForm" method="POST">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            <i class="fas fa-check mr-1"></i> Ya, Verifikasi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Payment Modal -->
+    <div id="rejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-4 text-center">Tolak Pembayaran?</h3>
                 <form id="rejectForm" method="POST">
                     @csrf
                     <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700">Reason for rejection:</label>
-                        <textarea name="admin_notes" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                            required></textarea>
+                        <label class="block text-sm font-medium text-gray-700 text-center">Alasan penolakan:</label>
+                        <textarea name="admin_notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                            required placeholder="Masukkan alasan penolakan..."></textarea>
                     </div>
-                    <div class="mt-4 flex justify-end space-x-3">
-                        <button type="button" onclick="hideRejectForm()"
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md">Reject Payment</button>
+                    <div class="mt-4 flex justify-center space-x-3">
+                        <button type="button" onclick="hideRejectModal()"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                            <i class="fas fa-times mr-1"></i> Ya, Tolak
+                        </button>
                     </div>
                 </form>
             </div>
@@ -156,20 +172,22 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                     <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-4">Hapus Booking?</h3>
+                <h3 class="text-lg font-medium text-gray-900 mt-4 text-center">Hapus Booking?</h3>
                 <div class="mt-2 px-4 py-3">
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 text-center">
                         Apakah Anda yakin ingin menghapus booking ini?
-                        Tindakan ini tidak dapat dibatalkan dan semua data booking akan dihapus permanen.
+                    </p>
+                    <p class="text-xs text-gray-400 mt-2 text-center">
+                        Booking ID: <span id="deleteBookingId" class="font-semibold"></span>
                     </p>
                 </div>
-                <div class="mt-4 flex justify-end space-x-3">
+                <div class="mt-4 flex justify-center space-x-3">
                     <button type="button" onclick="hideDeleteModal()"
                         class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
                         Batal
@@ -178,7 +196,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                            Hapus
+                            <i class="fas fa-trash mr-1"></i> Ya, Hapus
                         </button>
                     </form>
                 </div>
@@ -187,21 +205,31 @@
     </div>
 
     <script>
-        // Fungsi untuk modal reject (yang sudah ada)
-        function showRejectForm(bookingId) {
-            const form = document.getElementById('rejectForm');
-            form.action = `/admin/bookings/${bookingId}/reject`;
+        // Verify Modal Functions
+        function showVerifyModal(bookingId) {
+            document.getElementById('verifyBookingId').textContent = '#' + bookingId;
+            document.getElementById('verifyForm').action = `/admin/bookings/${bookingId}/verify`;
+            document.getElementById('verifyModal').classList.remove('hidden');
+        }
+
+        function hideVerifyModal() {
+            document.getElementById('verifyModal').classList.add('hidden');
+        }
+
+        // Reject Modal Functions
+        function showRejectModal(bookingId) {
+            document.getElementById('rejectForm').action = `/admin/bookings/${bookingId}/reject`;
             document.getElementById('rejectModal').classList.remove('hidden');
         }
 
-        function hideRejectForm() {
+        function hideRejectModal() {
             document.getElementById('rejectModal').classList.add('hidden');
         }
 
-        // Fungsi untuk modal delete (baru)
+        // Delete Modal Functions
         function showDeleteModal(bookingId) {
-            const form = document.getElementById('deleteForm');
-            form.action = `/admin/bookings/${bookingId}`;
+            document.getElementById('deleteBookingId').textContent = '#' + bookingId;
+            document.getElementById('deleteForm').action = `/admin/bookings/${bookingId}`;
             document.getElementById('deleteModal').classList.remove('hidden');
         }
 
@@ -209,23 +237,11 @@
             document.getElementById('deleteModal').classList.add('hidden');
         }
 
-        // Alternative: Confirm sebelum delete (simple)
-        function confirmDelete(bookingId) {
-            if (confirm(`Hapus booking #${bookingId}? Tindakan ini tidak dapat dibatalkan!`)) {
-                document.getElementById(`deleteForm-${bookingId}`).submit();
-            }
-        }
-    </script>
-
-    <script>
-        function showRejectForm(bookingId) {
-            const form = document.getElementById('rejectForm');
-            form.action = `/admin/bookings/${bookingId}/reject`;
-            document.getElementById('rejectModal').classList.remove('hidden');
-        }
-
-        function hideRejectForm() {
-            document.getElementById('rejectModal').classList.add('hidden');
-        }
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.id === 'verifyModal') hideVerifyModal();
+            if (event.target.id === 'rejectModal') hideRejectModal();
+            if (event.target.id === 'deleteModal') hideDeleteModal();
+        });
     </script>
 @endsection

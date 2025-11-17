@@ -6,6 +6,8 @@ use App\Models\Booking;
 use App\Models\Film;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -53,21 +55,32 @@ class AdminController extends Controller
         return view('admin.booking-detail', compact('booking'));
     }
 
-    public function verifyPayment($id)
-    {
+
+public function verifyPayment($id)
+{
+    try {
         $booking = Booking::findOrFail($id);
 
-        $booking->update([
-            'payment_status' => 'verified',
-            'status' => 'confirmed',
-            'paid_at' => now()
-        ]);
+        // Simple validation
+        if ($booking->payment_status !== 'pending') {
+            return redirect()->route('admin.bookings')
+                ->with('error', 'Booking sudah diverifikasi atau ditolak!');
+        }
 
-        $booking->seats()->update(['is_available' => false]);
+        // Simple update - NO TRANSACTION, NO COMPLEX LOGIC
+        $booking->payment_status = 'verified';
+        $booking->status = 'confirmed';
+        $booking->paid_at = now();
+        $booking->save();
 
         return redirect()->route('admin.bookings')
             ->with('success', 'Pembayaran berhasil diverifikasi!');
+
+    } catch (\Exception $e) {
+        return redirect()->route('admin.bookings')
+            ->with('error', 'Gagal: ' . $e->getMessage());
     }
+}
 
     public function rejectPayment(Request $request, $id)
     {
@@ -166,10 +179,134 @@ public function destroyBooking($id)
         $films = Film::withCount('bookings')->latest()->get();
         return view('admin.films', compact('films'));
     }
+    public function createFilm()
+    {
+        return view('admin.film-create');
+    }
+
+    public function storeFilm(Request $request)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'genre' => 'required|string|max:255',
+        'duration' => 'required|string|max:50',
+        'price' => 'required|numeric|min:0',
+        'description' => 'required|string',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        // ✅ TIDAK ADA validasi 'status' di sini
+    ]);
+
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('film-posters', 'public');
+    }
+
+    // ✅ PASTIKAN status = 'playing'
+    Film::create([
+        'title' => $request->title,
+        'genre' => $request->genre,
+        'duration' => $request->duration,
+        'price' => $request->price,
+        'description' => $request->description,
+        'status' => 'playing', // ✅ INI YANG HARUS 'playing'
+        'image' => $imagePath
+    ]);
+
+    return redirect()->route('admin.films')
+        ->with('success', 'Film berhasil ditambahkan ke SEDANG TAYANG! User bisa langsung pesan tiket.');
+}
+
+    public function editFilm($id)
+    {
+        $film = Film::findOrFail($id);
+        return view('admin.film-edit', compact('film'));
+    }
+
+    public function updateFilm(Request $request, $id)
+    {
+        $film = Film::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'duration' => 'required|string|max:50',
+            'price' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'status' => 'required|in:playing,upcoming,other',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $data = [
+            'title' => $request->title,
+            'genre' => $request->genre,
+            'duration' => $request->duration,
+            'price' => $request->price,
+            'description' => $request->description,
+            'status' => $request->status,
+        ];
+
+        // Handle image update
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($film->image && Storage::disk('public')->exists($film->image)) {
+                Storage::disk('public')->delete($film->image);
+            }
+
+            $data['image'] = $request->file('image')->store('film-posters', 'public');
+        }
+
+        $film->update($data);
+
+        return redirect()->route('admin.films')
+            ->with('success', 'Film berhasil diperbarui!');
+    }
+
+    public function destroyFilm($id)
+    {
+        $film = Film::findOrFail($id);
+
+        // Check if film has bookings
+        if ($film->bookings()->count() > 0) {
+            return redirect()->route('admin.films')
+                ->with('error', 'Tidak bisa menghapus film yang sudah memiliki booking!');
+        }
+
+        // Delete film image
+        if ($film->image && Storage::disk('public')->exists($film->image)) {
+            Storage::disk('public')->delete($film->image);
+        }
+
+        $film->delete();
+
+        return redirect()->route('admin.films')
+            ->with('success', 'Film berhasil dihapus!');
+    }
 
     public function users()
     {
         $users = User::withCount('bookings')->latest()->get();
         return view('admin.users', compact('users'));
+
     }
+
+    public function destroyUser(User $user)
+    {
+        // Prevent admin from deleting themselves
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users')
+                ->with('error', 'You cannot delete your own account.');
+        }
+
+        // Delete user's bookings first
+        Booking::where('user_id', $user->id)->delete();
+
+        // Delete the user
+        $user->delete();
+
+        return redirect()->route('admin.users')
+            ->with('success', 'User deleted successfully.');
+    }
+
+
+
 }
