@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Film;
 use App\Models\User;
+use App\Models\Seat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class AdminController extends Controller
 {
     public function dashboard()
@@ -56,29 +57,60 @@ class AdminController extends Controller
     }
 
 
-public function verifyPayment($id)
+public function verifyPayment($bookingId)
 {
     try {
-        $booking = Booking::findOrFail($id);
+        DB::beginTransaction();
 
-        // Simple validation
-        if ($booking->payment_status !== 'pending') {
-            return redirect()->route('admin.bookings')
-                ->with('error', 'Booking sudah diverifikasi atau ditolak!');
-        }
+        Log::info('🎯 === VERIFY PAYMENT METHOD DIPANGGIL ===', [
+            'booking_id' => $bookingId,
+            'admin_user' => auth()->user()->name,
+            'time' => now()
+        ]);
 
-        // Simple update - NO TRANSACTION, NO COMPLEX LOGIC
+        $booking = Booking::with(['seats', 'studio', 'film'])->findOrFail($bookingId);
+
+        Log::info('📦 BOOKING DATA BEFORE:', [
+            'id' => $booking->id,
+            'film' => $booking->film->title,
+            'current_payment_status' => $booking->payment_status,
+            'current_status' => $booking->status,
+            'seats' => $booking->seats->pluck('seat_code')
+        ]);
+
+        // 1. Update booking status saja
         $booking->payment_status = 'verified';
         $booking->status = 'confirmed';
         $booking->paid_at = now();
         $booking->save();
 
+        Log::info('✅ BOOKING STATUS UPDATED:', [
+            'new_payment_status' => $booking->payment_status,
+            'new_status' => $booking->status
+        ]);
+
+        // 2. ⬇️ JANGAN UPDATE seats.is_available LAGI! ⬇️
+        // HAPUS code ini sepenuhnya:
+        // $seatIds = $booking->seats->pluck('id')->toArray();
+        // if (!empty($seatIds)) {
+        //     $updated = DB::table('seats')
+        //         ->whereIn('id', $seatIds)
+        //         ->update(['is_available' => 0]);
+        // }
+
+        Log::info('💡 SEATS AVAILABILITY TIDAK DIUPDATE - Biarkan untuk film lain');
+
+        DB::commit();
+
+        Log::info('🎉 VERIFY PAYMENT COMPLETED SUCCESSFULLY');
+
         return redirect()->route('admin.bookings')
-            ->with('success', 'Pembayaran berhasil diverifikasi!');
+            ->with('success', 'Pembayaran berhasil diverifikasi! Kursi sekarang terkunci untuk film ini.');
 
     } catch (\Exception $e) {
-        return redirect()->route('admin.bookings')
-            ->with('error', 'Gagal: ' . $e->getMessage());
+        DB::rollBack();
+        Log::error('💥 VERIFY PAYMENT ERROR: ' . $e->getMessage());
+        return back()->with('error', 'Gagal: ' . $e->getMessage());
     }
 }
 

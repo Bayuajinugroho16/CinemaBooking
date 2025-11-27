@@ -98,3 +98,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
 });
+
+
+

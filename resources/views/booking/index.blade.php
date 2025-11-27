@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +12,30 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
 
-        .seat-available { background-color: #10B981; }
-        .seat-selected { background-color: #3B82F6; }
-        .seat-sweetbox { background-color: #F59E0B; }
-        .seat-occupied { background-color: #EF4444; cursor: not-allowed; }
+        .seat-available {
+            background-color: #10B981;
+        }
+
+        .seat-selected {
+            background-color: #3B82F6;
+        }
+
+        .seat-sweetbox {
+            background-color: #F59E0B;
+        }
+
+        .seat-occupied {
+            background-color: #EF4444;
+            cursor: not-allowed;
+        }
     </style>
 </head>
+
 <body class="bg-gray-900 text-white">
 
     <!-- Header -->
@@ -41,18 +56,20 @@
         <!-- Film Info -->
         <div class="bg-gray-800 rounded-xl p-6 mb-8">
             <div class="flex items-center space-x-6">
-                @if($film->image)
-                <img src="{{ asset('storage/' . $film->image) }}" alt="{{ $film->title }}" class="w-32 h-48 object-cover rounded-lg">
+                @if ($film->image)
+                    <img src="{{ asset('storage/' . $film->image) }}" alt="{{ $film->title }}"
+                        class="w-32 h-48 object-cover rounded-lg">
                 @else
-                <div class="w-32 h-48 bg-gray-700 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-film text-gray-500 text-4xl"></i>
-                </div>
+                    <div class="w-32 h-48 bg-gray-700 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-film text-gray-500 text-4xl"></i>
+                    </div>
                 @endif
                 <div>
                     <h1 class="text-3xl font-bold text-yellow-400">{{ $film->title }}</h1>
                     <p class="text-gray-300 mt-2">{{ $film->genre }}</p>
                     <p class="text-gray-300">{{ $film->duration }}</p>
-                    <p class="text-2xl font-bold text-green-400 mt-4">Rp {{ number_format($film->price, 0, ',', '.') }}</p>
+                    <p class="text-2xl font-bold text-green-400 mt-4">Rp {{ number_format($film->price, 0, ',', '.') }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -69,17 +86,17 @@
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h2 class="text-xl font-bold text-yellow-400 mb-4">Pilih Studio</h2>
                         <div class="space-y-3">
-                            @foreach($studios as $studio)
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="studio_id" value="{{ $studio->id }}"
-                                       class="studio-radio hidden"
-                                       {{ $loop->first ? 'checked' : '' }}>
-                                <div class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center">
-                                    <div class="w-3 h-3 rounded-full bg-yellow-400 hidden"></div>
-                                </div>
-                                <span class="text-white font-semibold">{{ $studio->name }}</span>
-                                <span class="text-gray-400 text-sm">({{ $studio->total_seats }} kursi)</span>
-                            </label>
+                            @foreach ($studios as $studio)
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="studio_id" value="{{ $studio->id }}"
+                                        class="studio-radio hidden" {{ $loop->first ? 'checked' : '' }}>
+                                    <div
+                                        class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center">
+                                        <div class="w-3 h-3 rounded-full bg-yellow-400 hidden"></div>
+                                    </div>
+                                    <span class="text-white font-semibold">{{ $studio->name }}</span>
+                                    <span class="text-gray-400 text-sm">({{ $studio->total_seats }} kursi)</span>
+                                </label>
                             @endforeach
                         </div>
                     </div>
@@ -88,23 +105,23 @@
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h2 class="text-xl font-bold text-yellow-400 mb-4">Pilih Tanggal</h2>
                         <input type="date" name="show_date"
-                               class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                               min="{{ date('Y-m-d') }}"
-                               value="{{ date('Y-m-d') }}">
+                            class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            min="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}">
                     </div>
 
                     <!-- Time Selection -->
                     <div class="bg-gray-800 rounded-xl p-6">
                         <h2 class="text-xl font-bold text-yellow-400 mb-4">Pilih Jam Tayang</h2>
                         <div class="grid grid-cols-2 gap-3">
-                            @foreach($showTimes as $time)
-                            <label class="cursor-pointer">
-                                <input type="radio" name="show_time" value="{{ $time }}"
-                                       class="hidden time-radio" {{ $loop->first ? 'checked' : '' }}>
-                                <div class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-center hover:bg-gray-600 transition time-slot">
-                                    <span class="text-white font-semibold">{{ $time }}</span>
-                                </div>
-                            </label>
+                            @foreach ($showTimes as $time)
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="show_time" value="{{ $time }}"
+                                        class="hidden time-radio" {{ $loop->first ? 'checked' : '' }}>
+                                    <div
+                                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-center hover:bg-gray-600 transition time-slot">
+                                        <span class="text-white font-semibold">{{ $time }}</span>
+                                    </div>
+                                </label>
                             @endforeach
                         </div>
                     </div>
@@ -155,8 +172,8 @@
                                     <span id="totalPrice" class="text-2xl font-bold text-green-400">Rp 0</span>
                                 </div>
                                 <button type="submit"
-                                        class="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-yellow-400 transition disabled:opacity-50"
-                                        id="bookButton" disabled>
+                                    class="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-yellow-400 transition disabled:opacity-50"
+                                    id="bookButton" disabled>
                                     <i class="fas fa-ticket-alt mr-2"></i>PESAN SEKARANG
                                 </button>
                             </div>
@@ -177,16 +194,65 @@
             const totalPriceSpan = document.getElementById('totalPrice');
             const bookButton = document.getElementById('bookButton');
             const filmPrice = {{ $film->price }};
+            const showDateInput = document.querySelector('input[name="show_date"]');
+            const timeRadios = document.querySelectorAll('.time-radio');
 
             let selectedSeats = [];
             let currentStudioId = null;
+
+            // Load seats when studio, date, or time changes
+            function loadSeatsWithParams() {
+                if (!currentStudioId) return;
+
+                const filmId = {{ $film->id }};
+                const showDate = showDateInput.value;
+                const showTime = document.querySelector('input[name="show_time"]:checked').value;
+
+                console.log('🔍 Loading seats with params:', {
+                    studioId: currentStudioId,
+                    filmId,
+                    showDate,
+                    showTime
+                });
+
+                fetch(
+                        `/studios/${currentStudioId}/seats?film_id=${filmId}&show_date=${showDate}&show_time=${showTime}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('✅ Seats data received:', data);
+                        renderSeatMap(data);
+                        updateSelectedSeats();
+                    })
+                    .catch(error => {
+                        console.error('❌ Error loading seats:', error);
+                        seatMap.innerHTML = '<div class="text-red-400">Error memuat kursi</div>';
+                    });
+            }
 
             // Load seats when studio is selected
             studioRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     if (this.checked) {
                         currentStudioId = this.value;
-                        loadSeats(this.value);
+                        loadSeatsWithParams();
+                    }
+                });
+            });
+
+            // Load seats when date changes
+            showDateInput.addEventListener('change', function() {
+                if (currentStudioId) {
+                    console.log('📅 Date changed to:', this.value);
+                    loadSeatsWithParams();
+                }
+            });
+
+            // Load seats when time changes
+            timeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked && currentStudioId) {
+                        console.log('⏰ Time changed to:', this.value);
+                        loadSeatsWithParams();
                     }
                 });
             });
@@ -195,25 +261,14 @@
             const initialStudio = document.querySelector('.studio-radio:checked');
             if (initialStudio) {
                 currentStudioId = initialStudio.value;
-                loadSeats(initialStudio.value);
-            }
-
-            function loadSeats(studioId) {
-                console.log('Loading seats for studio:', studioId);
-                fetch(`/studios/${studioId}/seats`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderSeatMap(data);
-                        updateSelectedSeats();
-                    })
-                    .catch(error => {
-                        console.error('Error loading seats:', error);
-                        seatMap.innerHTML = '<div class="text-red-400">Error memuat kursi</div>';
-                    });
+                // Tunggu sebentar agar DOM fully loaded
+                setTimeout(() => {
+                    loadSeatsWithParams();
+                }, 100);
             }
 
             function renderSeatMap(seatsByRow) {
-                console.log('Rendering seat map with data:', seatsByRow);
+                console.log('🎨 Rendering seat map with data:', seatsByRow);
                 seatMap.innerHTML = '';
 
                 Object.keys(seatsByRow).sort().forEach(row => {
@@ -229,13 +284,16 @@
                     // Seats
                     seatsByRow[row].forEach(seat => {
                         const seatDiv = document.createElement('div');
-                        let seatClass = 'w-8 h-8 rounded flex items-center justify-center text-xs font-bold cursor-pointer transition-all ';
+                        let seatClass =
+                            'w-8 h-8 rounded flex items-center justify-center text-xs font-bold cursor-pointer transition-all ';
 
                         // Check if seat is selected
                         const isSelected = selectedSeats.find(s => s.id === seat.id);
 
-                        if (!seat.is_available) {
+                        // ⬇️ PERBAIKAN: Gunakan is_booked untuk menentukan status kursi
+                        if (seat.is_booked) {
                             seatClass += 'seat-occupied cursor-not-allowed';
+                            console.log('🎯 Seat is BOOKED:', seat.seat_code, seat);
                         } else if (isSelected) {
                             seatClass += 'seat-selected';
                         } else if (seat.type === 'sweetbox') {
@@ -248,12 +306,17 @@
                         seatDiv.textContent = seat.number;
                         seatDiv.title = `Kursi ${seat.seat_code}`;
                         seatDiv.dataset.seatId = seat.id;
+                        seatDiv.dataset.seatCode = seat.seat_code;
 
-                        if (seat.is_available) {
+                        // ⬇️ PERBAIKAN: Hanya bisa diklik jika tidak booked
+                        if (!seat.is_booked) {
                             seatDiv.addEventListener('click', function() {
-                                console.log('Clicked seat:', seat.seat_code);
+                                console.log('🖱️ Clicked available seat:', seat.seat_code);
                                 toggleSeat(seat);
                             });
+                        } else {
+                            console.log('🚫 Seat is booked, cannot click:', seat.seat_code);
+                            seatDiv.style.cursor = 'not-allowed';
                         }
 
                         rowDiv.appendChild(seatDiv);
@@ -264,43 +327,39 @@
             }
 
             function toggleSeat(seat) {
-                console.log('Toggling seat:', seat.seat_code);
-                console.log('Current selected seats before:', selectedSeats.map(s => s.seat_code));
+                console.log('🔄 Toggling seat:', seat.seat_code);
+                console.log('📊 Current selected seats before:', selectedSeats.map(s => s.seat_code));
 
                 const seatIndex = selectedSeats.findIndex(s => s.id === seat.id);
 
                 if (seatIndex > -1) {
                     // Remove seat
                     selectedSeats.splice(seatIndex, 1);
-                    console.log('Removed seat:', seat.seat_code);
+                    console.log('➖ Removed seat:', seat.seat_code);
                 } else {
                     // Add seat
                     selectedSeats.push(seat);
-                    console.log('Added seat:', seat.seat_code);
+                    console.log('➕ Added seat:', seat.seat_code);
                 }
 
-                console.log('Current selected seats after:', selectedSeats.map(s => s.seat_code));
+                console.log('📊 Current selected seats after:', selectedSeats.map(s => s.seat_code));
                 updateSelectedSeats();
 
-                // Re-render seat map to update colors without losing event listeners
+                // Re-render seat map to update colors
                 if (currentStudioId) {
-                    fetch(`/studios/${currentStudioId}/seats`)
-                        .then(response => response.json())
-                        .then(data => {
-                            renderSeatMap(data);
-                        });
+                    loadSeatsWithParams();
                 }
             }
 
             function updateSelectedSeats() {
-                console.log('Updating selected seats display. Count:', selectedSeats.length);
+                console.log('🔄 Updating selected seats display. Count:', selectedSeats.length);
 
                 // Update selected seats display
                 if (selectedSeats.length === 0) {
                     selectedSeatsDiv.innerHTML = 'Belum ada kursi dipilih';
                     totalPriceSpan.textContent = 'Rp 0';
                     bookButton.disabled = true;
-                    console.log('No seats selected - disabling button');
+                    console.log('❌ No seats selected - disabling button');
                 } else {
                     const seatCodes = selectedSeats.map(seat => {
                         const extra = seat.type === 'sweetbox' ? ' (Sweetbox)' : '';
@@ -320,7 +379,7 @@
 
                     totalPriceSpan.textContent = 'Rp ' + total.toLocaleString('id-ID');
                     bookButton.disabled = false;
-                    console.log('Seats selected - enabling button. Total:', total);
+                    console.log('✅ Seats selected - enabling button. Total:', total);
                 }
 
                 // Update hidden inputs for seats
@@ -334,7 +393,7 @@
                     document.getElementById('bookingForm').appendChild(input);
                 });
 
-                console.log('Created hidden inputs:', document.querySelectorAll('input[name="seats[]"]').length);
+                console.log('📝 Created hidden inputs:', document.querySelectorAll('input[name="seats[]"]').length);
             }
 
             // Update radio button visuals
@@ -367,7 +426,14 @@
                 selectedSlot.classList.remove('bg-gray-700', 'text-white');
                 selectedSlot.classList.add('bg-yellow-500', 'text-black');
             });
+
+            // Initialize studio radio visuals
+            document.querySelectorAll('.studio-radio:checked').forEach(radio => {
+                const visual = radio.parentElement.querySelector('div > div');
+                visual.classList.remove('hidden');
+            });
         });
     </script>
 </body>
+
 </html>
