@@ -27,10 +27,9 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user', // default role
+            'role' => 'customer',
         ]);
 
-        // login user langsung setelah register (opsional)
         auth()->login($user);
 
         return view('auth.login')->with('success', 'Registrasi berhasil! Silakan login.');

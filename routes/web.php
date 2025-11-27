@@ -23,12 +23,12 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// ✅ GOOGLE AUTH ROUTES - PAKAI NAMA BARU
+//
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
-// Route default Breeze (login, register, dsb)
+
 require __DIR__.'/auth.php';
-// Debug route - tambahkan di atas route lainnya
+
 Route::get('/debug-auth', function () {
     return response()->json([
         'is_authenticated' => auth()->check(),
