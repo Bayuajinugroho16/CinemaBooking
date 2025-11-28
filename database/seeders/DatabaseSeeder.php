@@ -17,22 +17,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        // Create Admin User
+
         User::create([
             'name' => 'Admin Cinema XXI',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin123'),
-            'role' => 'admin' // Pastikan role = 'admin'
+            'role' => 'admin'
         ]);
-        // Create user tanpa factory
+
         User::create([
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => 'password', // Akan di-hash otomatis oleh mutator
+            'password' => 'password',
             'role' => 'user'
         ]);
 
-        // Panggil seeder lainnya
+        
         $this->call([
             FilmSeeder::class,
             StudioSeeder::class,

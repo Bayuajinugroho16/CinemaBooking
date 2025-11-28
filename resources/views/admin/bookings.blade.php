@@ -171,7 +171,7 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    
     <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3">
@@ -205,7 +205,7 @@
     </div>
 
     <script>
-        // Verify Modal Functions
+
         function showVerifyModal(bookingId) {
             document.getElementById('verifyBookingId').textContent = '#' + bookingId;
             document.getElementById('verifyForm').action = `/admin/bookings/${bookingId}/verify`;
@@ -216,7 +216,7 @@
             document.getElementById('verifyModal').classList.add('hidden');
         }
 
-        // Reject Modal Functions
+
         function showRejectModal(bookingId) {
             document.getElementById('rejectForm').action = `/admin/bookings/${bookingId}/reject`;
             document.getElementById('rejectModal').classList.remove('hidden');
@@ -226,7 +226,7 @@
             document.getElementById('rejectModal').classList.add('hidden');
         }
 
-        // Delete Modal Functions
+
         function showDeleteModal(bookingId) {
             document.getElementById('deleteBookingId').textContent = '#' + bookingId;
             document.getElementById('deleteForm').action = `/admin/bookings/${bookingId}`;
@@ -237,7 +237,7 @@
             document.getElementById('deleteModal').classList.add('hidden');
         }
 
-        // Close modals when clicking outside
+
         document.addEventListener('click', function(event) {
             if (event.target.id === 'verifyModal') hideVerifyModal();
             if (event.target.id === 'rejectModal') hideRejectModal();

@@ -11,7 +11,7 @@ class StudioSeeder extends Seeder
 {
     public function run()
     {
-        // Studio 1 - 80 seats (8x10)
+
         $studio1 = Studio::create([
             'name' => 'Studio 1',
             'total_seats' => 80,
@@ -21,7 +21,7 @@ class StudioSeeder extends Seeder
 
         $this->createSeats($studio1, 8, 10);
 
-        // Studio 2 - 64 seats (8x8)
+
         $studio2 = Studio::create([
             'name' => 'Studio 2',
             'total_seats' => 64,
@@ -31,7 +31,7 @@ class StudioSeeder extends Seeder
 
         $this->createSeats($studio2, 8, 8);
 
-        // Studio 3 - 100 seats (10x10)
+
         $studio3 = Studio::create([
             'name' => 'Studio 3 - Sweetbox',
             'total_seats' => 100,
@@ -50,7 +50,7 @@ class StudioSeeder extends Seeder
             for ($number = 1; $number <= $columns; $number++) {
                 $seatCode = $row . $number;
 
-                // Determine seat type
+                
                 $type = 'regular';
                 if ($hasSweetbox && $row >= 'H' && $number >= 4 && $number <= 7) {
                     $type = 'sweetbox';

@@ -19,14 +19,14 @@ class SocialAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
-            // Cek apakah user sudah ada
+
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // Login user yang sudah ada
+
                 Auth::login($user);
             } else {
-                // Buat user baru
+                
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),

@@ -323,16 +323,16 @@ public function destroyBooking($id)
 
     public function destroyUser(User $user)
     {
-        // Prevent admin from deleting themselves
+
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users')
                 ->with('error', 'You cannot delete your own account.');
         }
 
-        // Delete user's bookings first
+
         Booking::where('user_id', $user->id)->delete();
 
-        // Delete the user
+        
         $user->delete();
 
         return redirect()->route('admin.users')

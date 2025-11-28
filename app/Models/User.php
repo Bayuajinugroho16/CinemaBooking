@@ -24,14 +24,10 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed', // ← Biarkan ini saja
+        'password' => 'hashed', 
     ];
 
-    // HAPUS mutator ini ↓
-    // public function setPasswordAttribute($password)
-    // {
-    //     $this->attributes['password'] = Hash::make($password);
-    // }
+
 
     public function isAdmin()
     {

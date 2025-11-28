@@ -3,7 +3,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-900 py-8">
     <div class="max-w-4xl mx-auto px-4">
-        <!-- Header -->
+        
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-bold text-white flex items-center">
                 <i class="fas fa-ticket-alt text-yellow-500 mr-3"></i>
@@ -15,7 +15,7 @@
             </a>
         </div>
 
-        <!-- Status Alert -->
+
         @if($booking->payment_status == 'verified')
         <div class="bg-green-900/30 border border-green-700 rounded-xl p-6 mb-6">
             <div class="flex items-center">
@@ -61,7 +61,7 @@
         </div>
         @endif
 
-        <!-- Booking Information -->
+
         <div class="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700 mb-6">
             <h2 class="text-xl font-semibold text-white mb-6 flex items-center">
                 <i class="fas fa-info-circle text-yellow-500 mr-3"></i>
@@ -69,7 +69,7 @@
             </h2>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Film Information -->
+
                 <div class="space-y-4">
                     <div class="flex items-start space-x-4">
                         @if($booking->film->image)
@@ -108,7 +108,7 @@
                     </div>
                 </div>
 
-                <!-- Booking Details -->
+
                 <div class="space-y-4">
                     <div class="bg-gray-700/50 rounded-lg p-4">
                         <label class="block text-sm font-medium text-gray-400 mb-2">
@@ -155,7 +155,7 @@
             </div>
         </div>
 
-        <!-- Action Buttons -->
+
         <div class="bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700">
             <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
                 <i class="fas fa-cogs text-yellow-500 mr-3"></i>
@@ -204,7 +204,7 @@
             </div>
         </div>
 
-        <!-- Additional Information -->
+
         <div class="mt-6 text-center text-gray-400 text-sm">
             <p>Booking dibuat pada {{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y H:i') }}</p>
             @if($booking->payment_proof && $booking->updated_at != $booking->created_at)

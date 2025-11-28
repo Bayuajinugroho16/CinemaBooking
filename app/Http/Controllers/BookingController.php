@@ -9,9 +9,9 @@ use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB; // ← TAMBAHKAN INI
-use Illuminate\Support\Facades\Log; // ← TAMBAHKAN INI
-use Illuminate\Support\Facades\Validator; // ← TAMBAHKAN INI
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -47,9 +47,9 @@ class BookingController extends Controller
                 ->orderBy('number')
                 ->get();
 
-    // ⬇️ Tandai seats yang sudah dibooking untuk film dan showtime ini
+
     if ($filmId && $showDate && $showTime) {
-        // Ambil seat_ids yang sudah dibooking (verified) untuk film + showtime ini
+
         $bookedSeatIds = DB::table('bookings')
             ->join('booking_seat', 'bookings.id', '=', 'booking_seat.booking_id')
             ->where('bookings.film_id', $filmId)
@@ -65,10 +65,10 @@ class BookingController extends Controller
             'booked_seat_ids' => $bookedSeatIds
         ]);
 
-        // Tambah status is_booked ke response
+
         $seats->each(function($seat) use ($bookedSeatIds) {
             $seat->is_booked = in_array($seat->id, $bookedSeatIds);
-            $seat->is_available = !in_array($seat->id, $bookedSeatIds); // Update is_available juga
+            $seat->is_available = !in_array($seat->id, $bookedSeatIds);
         });
     }
 
@@ -109,7 +109,7 @@ public function bookSeats(Request $request)
             'selected_seat_ids' => $selectedSeats->pluck('id')
         ]);
 
-        // ⬇️ VALIDASI DETAIL - CEK SETIAP KURSI
+
         $unavailableSeats = [];
 
         foreach ($selectedSeats as $seat) {
@@ -118,7 +118,7 @@ public function bookSeats(Request $request)
                 'seat_code' => $seat->seat_code
             ]);
 
-            // Cek apakah ada booking VERIFIED untuk seat ini di film + showtime yang sama
+
             $existingBooking = DB::table('bookings')
                 ->join('booking_seat', 'bookings.id', '=', 'booking_seat.booking_id')
                 ->where('booking_seat.seat_id', $seat->id)
@@ -151,7 +151,7 @@ public function bookSeats(Request $request)
                 ->withInput();
         }
 
-        // Create booking
+
         $booking = Booking::create([
             'user_id' => Auth::id(),
             'film_id' => $request->film_id,
@@ -164,7 +164,7 @@ public function bookSeats(Request $request)
             'payment_status' => 'pending'
         ]);
 
-        // Attach seats to booking
+
         $booking->seats()->attach($request->seats);
 
         Log::info('🟢 BOOKING CREATED SUCCESSFULLY:', [
@@ -191,27 +191,27 @@ public function bookSeats(Request $request)
 {
     $booking = Booking::with(['film', 'studio', 'seats'])->findOrFail($bookingId);
 
-    // Generate dynamic QRIS data berdasarkan booking
-    $amount = str_pad($booking->total_price, 13, '0', STR_PAD_LEFT); // Format amount untuk QRIS
+
+    $amount = str_pad($booking->total_price, 13, '0', STR_PAD_LEFT);
     $merchantName = "CINEMA XXI BOOKING";
     $bookingCode = str_pad($booking->id, 10, '0', STR_PAD_LEFT);
 
-    // QRIS format dengan data dinamis
-    $qrisCode = "000201" . // Payload Format Indicator
-                "010211" . // Point of Initiation Method
-                "26680014ID.CO.QRIS.WWW" . // Global Unique Identifier
-                "011893600911000128995" . // Merchant Account Information
-                "0106" . $bookingCode . // Booking ID
-                "0208" . $amount . // Amount
-                "52045812" . // Merchant Category Code
-                "5303604" . // Currency (IDR)
-                "5406" . $amount . // Transaction Amount
-                "5802ID" . // Country Code
-                "5906" . substr($merchantName, 0, 6) . // Merchant Name
-                "6007Jakarta" . // Merchant City
-                "610512340" . // Postal Code
-                "62380114Duitin QRIS" . // Additional Data Field Template
-                "6304"; // CRC
+
+    $qrisCode = "000201" .
+                "010211" .
+                "26680014ID.CO.QRIS.WWW" .
+                "011893600911000128995" .
+                "0106" . $bookingCode .
+                "0208" . $amount .
+                "52045812" .
+                "5303604" .
+                "5406" . $amount .
+                "5802ID" .
+                "5906" . substr($merchantName, 0, 6) .
+                "6007Jakarta" .
+                "610512340" .
+                "62380114Duitin QRIS" .
+                "6304";
 
     return view('booking.payment', compact('booking', 'qrisCode'));
 }
@@ -255,7 +255,7 @@ public function uploadPaymentProof(Request $request, $id)
         $booking->payment_status = 'pending';
         $booking->save();
 
-        // ⬇️ REDIRECT KE MY-TICKET ⬇️
+
         return redirect()->route('booking.myTicket')
                         ->with('success', 'Bukti pembayaran berhasil diupload! Menunggu verifikasi admin.');
 
@@ -264,7 +264,7 @@ public function uploadPaymentProof(Request $request, $id)
     }
 }
 
-    // TAMBAHKAN METHOD INI YANG BELUM ADA
+
     public function showUserBooking($id)
     {
         $booking = Booking::with(['film', 'studio', 'seats'])
@@ -295,7 +295,7 @@ public function uploadPaymentProof(Request $request, $id)
         return back()->with('success', 'Pembayaran ditolak!');
     }
 
-    // TAMBAHKAN METHOD YANG DIPERLUKAN
+
     public function myTicket()
     {
         $bookings = Booking::with(['film', 'studio', 'seats'])
@@ -315,9 +315,9 @@ public function uploadPaymentProof(Request $request, $id)
         return view('booking.confirmation', compact('booking'));
     }
 
-    // Tambahkan method ini di BookingController
-public function debugSeats($bookingId)
-{
+
+    public function debugSeats($bookingId)
+    {
     try {
         $booking = Booking::with(['seats', 'film', 'studio'])->findOrFail($bookingId);
 
@@ -348,5 +348,5 @@ public function debugSeats($bookingId)
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
     }
-}
+    }
 }
