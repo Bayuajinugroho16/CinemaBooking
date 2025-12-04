@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100">
+<body class="bg-white-100">
     <!-- Sidebar -->
     <div class="flex h-screen">
         <div class="w-64 bg-gray-800 text-white">
@@ -45,7 +45,7 @@
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
             <!-- Header -->
-            <header class="bg-white shadow-sm border-b">
+            <header class="bg-gray-800 shadow-sm border-b">
                 <div class="flex justify-between items-center px-6 py-4">
                     <h2 class="text-xl font-semibold text-gray-800">@yield('title', 'Admin Dashboard')</h2>
                     <div class="flex items-center space-x-4">
@@ -63,13 +63,13 @@
             <!-- Content -->
             <main class="p-6">
                 @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    <div class="bg-gray-800 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                         {{ session('success') }}
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <div class="bg-gray-800 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                         {{ session('error') }}
                     </div>
                 @endif

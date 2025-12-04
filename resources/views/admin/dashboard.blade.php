@@ -4,13 +4,13 @@
 
 @section('content')
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p class="text-gray-600">Selamat datang di panel admin Cinema Booking</p>
+        <h1 class="text-2xl font-bold bg-text-gray-900">Admin Dashboard</h1>
+        <p class="bg-text-gray-600">Selamat datang di panel admin Cinema Booking</p>
     </div>
 
     <!-- Stats Cards -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold mb-4">Booking Statistics</h3>
+    <div class="bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 text-white">Booking Statistics</h3>
         <canvas id="bookingChart" width="400" height="200"></canvas>
     </div>
 
@@ -22,7 +22,7 @@
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
-                    label: 'Bookings per Month',
+                    label:'Bookings per Month',
                     data: [12, 19, 3, 5, 2, 3],
                     backgroundColor: 'rgba(255, 193, 7, 0.8)',
                     borderColor: 'rgba(255, 193, 7, 1)',
@@ -39,83 +39,83 @@
         });
     </script>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
-                <div class="p-3 bg-blue-100 rounded-lg">
+                <div class="p-3 bg-gray-800 rounded-lg">
                     <i class="fas fa-ticket-alt text-blue-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Bookings</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_bookings'] }}</p>
+                    <p class="text-sm font-medium text-white">Total Bookings</p>
+                    <p class="text-2xl font-bold text-white">{{ $stats['total_bookings'] }}</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="p-3 bg-yellow-100 rounded-lg">
                     <i class="fas fa-clock text-yellow-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Pending Payments</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['pending_payments'] }}</p>
+                    <p class="text-sm font-medium text-white">Pending Payments</p>
+                    <p class="text-2xl font-bold text-white">{{ $stats['pending_payments'] }}</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="p-3 bg-green-100 rounded-lg">
                     <i class="fas fa-check-circle text-green-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Confirmed Bookings</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['confirmed_bookings'] }}</p>
+                    <p class="text-sm font-medium text-white">Confirmed Bookings</p>
+                    <p class="text-2xl font-bold  text-white">{{ $stats['confirmed_bookings'] }}</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="p-3 bg-purple-100 rounded-lg">
                     <i class="fas fa-users text-purple-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Users</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_users'] }}</p>
+                    <p class="text-sm font-medium  text-white">Total Users</p>
+                    <p class="text-2xl font-bold  text-white">{{ $stats['total_users'] }}</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Recent Bookings -->
-    <div class="bg-white rounded-lg shadow">
+    <div class="bg-gray-800 rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Recent Bookings</h2>
+            <h2 class="text-lg font-semibold  text-white">Recent Bookings</h2>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Booking ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Film</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Show Time</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Booking ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Film</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Show Time</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-gray-800 divide-y divide-gray-200">
                     @foreach ($recent_bookings as $booking)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $booking->id }}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">#{{ $booking->id }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $booking->user->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $booking->user->email }}</div>
+                                <div class="text-sm text-white">{{ $booking->user->name }}</div>
+                                <div class="text-sm text-white">{{ $booking->user->email }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $booking->film->title }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-white">{{ $booking->film->title }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
                                 {{ \Carbon\Carbon::parse($booking->show_date)->format('M d, Y') }}<br>
                                 {{ $booking->show_time }}
                             </td>
@@ -148,40 +148,40 @@
     <!-- Quick Actions -->
     <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
         <a href="{{ route('admin.bookings') }}"
-            class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+            class="bg-gray-800 rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
             <div class="flex items-center">
                 <div class="p-3 bg-blue-100 rounded-lg">
                     <i class="fas fa-list text-blue-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Manage Bookings</h3>
-                    <p class="text-gray-600">Lihat dan kelola semua booking</p>
+                    <h3 class="text-lg font-semibold  text-white">Manage Bookings</h3>
+                    <p class=" text-white">Lihat dan kelola semua booking</p>
                 </div>
             </div>
         </a>
 
         <a href="{{ route('admin.films') }}"
-            class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+            class="bg-gray-800 rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
             <div class="flex items-center">
                 <div class="p-3 bg-green-100 rounded-lg">
                     <i class="fas fa-film text-green-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Manage Films</h3>
-                    <p class="text-gray-600">Kelola film yang tersedia</p>
+                    <h3 class="text-lg font-semibold  text-white">Manage Films</h3>
+                    <p class=" text-white">Kelola film yang tersedia</p>
                 </div>
             </div>
         </a>
 
         <a href="{{ route('admin.users') }}"
-            class="bg-white rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
+            class="bg-gray-800 rounded-lg shadow p-6 hover:shadow-md transition cursor-pointer">
             <div class="flex items-center">
                 <div class="p-3 bg-purple-100 rounded-lg">
                     <i class="fas fa-users text-purple-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Manage Users</h3>
-                    <p class="text-gray-600">Kelola data pengguna</p>
+                    <h3 class="text-lg font-semibold text-white">Manage Users</h3>
+                    <p class=" text-white">Kelola data pengguna</p>
                 </div>
             </div>
         </a>
